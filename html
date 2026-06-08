@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown 24 Jam</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e1e2f, #111119);
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 3rem;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            letter-spacing: 2px;
+            color: #00ecb9;
+        }
+
+        .countdown {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+        }
+
+        .time-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1.5rem;
+            border-radius: 12px;
+            min-width: 100px;
+            border-bottom: 4px solid #00ecb9;
+        }
+
+        .time-box span {
+            display: block;
+        }
+
+        .number {
+            font-size: 3.5rem;
+            font-weight: bold;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: #a0a0a0;
+            margin-top: 0.5rem;
+            letter-spacing: 1px;
+        }
+
+        @media (max-width: 500px) {
+            .countdown { gap: 0.8rem; }
+            .time-box { min-width: 75px; padding: 1rem; }
+            .number { font-size: 2.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>COUNTDOWN</h1>
+        <div class="countdown">
+            <div class="time-box">
+                <span class="number" id="hours">00</span>
+                <span class="label">Jam</span>
+            </div>
+            <div class="time-box">
+                <span class="number" id="minutes">00</span>
+                <span class="label">Menit</span>
+            </div>
+            <div class="time-box">
+                <span class="number" id="seconds">00</span>
+                <span class="label">Detik</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Cek apakah waktu target sudah ada di localStorage
+        let targetTime = localStorage.getItem('countdownTarget');
+
+        if (!targetTime) {
+            // Jika belum ada, set 24 jam dari SEKARANG
+            targetTime = new Date().getTime() + (24 * 60 * 60 * 1000);
+            localStorage.setItem('countdownTarget', targetTime);
+        } else {
+            // Convert string dari localStorage ke number
+            targetTime = parseInt(targetTime);
+        }
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const difference = targetTime - now;
+
+            // Jika waktu habis
+            if (difference <= 0) {
+                clearInterval(interval);
+                document.getElementById('hours').innerText = "00";
+                document.getElementById('minutes').innerText = "00";
+                document.getElementById('seconds').innerText = "00";
+                document.querySelector('h1').innerText = "WAKTU HABIS!";
+                return;
+            }
+
+            // Hitung jam, menit, detik
+            const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+            // Tampilkan ke HTML (tambah angka 0 di depan jika < 10)
+            document.getElementById('hours').innerText = hours < 10 ? '0' + hours : hours;
+            document.getElementById('minutes').innerText = minutes < 10 ? '0' + minutes : minutes;
+            document.getElementById('seconds').innerText = seconds < 10 ? '0' + seconds : seconds;
+        }
+
+        // Jalankan fungsi tiap 1 detik
+        const interval = setInterval(updateCountdown, 1000);
+        
+        // Jalankan langsung sekali di awal biar ga delay 1 detik kosong
+        updateCountdown();
+    </script>
+</body>
+</html>
